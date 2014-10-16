@@ -3,6 +3,8 @@ package com.uber.CookieCrime;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
+import android.util.Log;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -28,26 +30,32 @@ public class DisplayMessageActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+        final String URL = "http://data.police.uk/api/crimes-at-location?date=2012-02&location_id=54312";
+
         // Get the message from the intent
         Intent intent = getIntent();
         String url = intent.getStringExtra(Main.URL);
         String input = "";
+        String result ="";
 
         try {
             HttpClient client = new DefaultHttpClient();
-            HttpGet get = new HttpGet(url);
-            HttpResponse response = client.execute(get);
+            HttpGet get = new HttpGet(URL);
             ResponseHandler<String> handler = new BasicResponseHandler();
-
+            Log.d("Connection", "Connection established!");
             try {
                 input = client.execute(get, handler);
+                Log.d("input", "Input client created!");
             }
             catch (Exception e) {
-                e.printStackTrace();
+                Log.d("SmallCatch", e.toString());
             }
         }
         catch (Exception e) {
-            e.printStackTrace();
+            Log.d("BigCatch", e.toString());
         }
 
         try {
@@ -55,20 +63,31 @@ public class DisplayMessageActivity extends Activity {
             String locationType;
 
             JSONArray array = new JSONArray(input);
+            Log.d("ArrayLength", "Array length before for is " + array.length());
             for (int i = 0; i <array.length(); i++) {
                 JSONObject row = array.getJSONObject(i);
+                category = row.getString("category");
+                locationType = row.getString("location_type");
+
+                result += "Category: " + category + "; " + "Location: " + locationType + "\n";
+
+                Log.d("Result", result);
             }
 
         }
         catch (Exception e) {
-            e.printStackTrace();
+            Log.d("JSONParsingException", e.toString());
         }
 
 
         // Create the text view
         TextView textView = new TextView(this);
-        textView.setTextSize(40);
-        //textView.setText(message);
+        textView.setTextSize(20);
+        if (result != "") {
+            textView.setText(result);
+        } else {
+            textView.setText("The string is empty. Is not JSON, boss!");
+        }
 
         // Set the text view as the activity layout
         setContentView(textView);

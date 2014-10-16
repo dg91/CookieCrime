@@ -8,7 +8,7 @@ import android.widget.EditText;
 
 public class Main extends Activity {
     //public final static String EXTRA_MESSAGE = "com.uber.CookieCrime.MESSAGE";
-    public final static String URL = "http://data.police.uk/api/crimes-at-location?date=2012-02&location_id=54312";
+    public final static String URL = "http://www.data.police.uk/api/crimes-at-location?date=2012-02&location_id=54312";
     /**
      * Called when the activity is first created.
      */
