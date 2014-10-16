@@ -30,10 +30,11 @@ public class DisplayMessageActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //Blocks the main thread
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        final String URL = "http://data.police.uk/api/crimes-at-location?date=2012-02&location_id=54312";
+        final String URL = "http://data.police.uk/api/crimes-at-location?date=2012-02&lat=52.629729&lng=-1.131593";
 
         // Get the message from the intent
         Intent intent = getIntent();
@@ -61,17 +62,27 @@ public class DisplayMessageActivity extends Activity {
         try {
             String category;
             String locationType;
+            Double latitude;
+            Double longitude;
+            JSONObject location;
+            JSONObject street;
+            String streetName;
 
             JSONArray array = new JSONArray(input);
-            Log.d("ArrayLength", "Array length before for is " + array.length());
-            for (int i = 0; i <array.length(); i++) {
+            for (int i = 0; i < array.length(); i++) {
                 JSONObject row = array.getJSONObject(i);
                 category = row.getString("category");
                 locationType = row.getString("location_type");
+                location = row.getJSONObject("location");
+                latitude = location.getDouble("latitude");
+                longitude = location.getDouble("longitude");
+                street = location.getJSONObject("street");
+                streetName = street.getString("name");
 
-                result += "Category: " + category + "; " + "Location: " + locationType + "\n";
+                result += "Category: " + category.toUpperCase() + ";\n" + "Location: " + locationType + ";\n" +
+                        "Street: " + streetName + "\n" + "Lat: " + latitude + ";\n" + "Long: " + longitude + ".\n\n";
 
-                Log.d("Result", result);
+                Log.d("Location", location.toString());
             }
 
         }
